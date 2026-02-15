@@ -441,7 +441,10 @@ Single-table design following the reference repo pattern (partition key `pk`, so
 ```
 drone-fleet-{account_id}-{environment}/
 ├── images/
-│   └── {mission_id}/{drone_id}/{timestamp}.jpg
+│   ├── captures/               # Raw captures (bulk, short retention)
+│   │   └── {mission_id}/{drone_id}/{timestamp}.jpg
+│   └── detections/             # Detection images (longer retention)
+│       └── {mission_id}/{detection_id}.jpg
 ├── environments/
 │   └── {environment_id}/
 │       ├── model.json          # Processed environment model
@@ -453,6 +456,25 @@ drone-fleet-{account_id}-{environment}/
         ├── config.json
         └── results/
 ```
+
+### 5.3 S3 Lifecycle and Retention Policy
+
+Images are the dominant storage cost. S3 Lifecycle rules enforce automatic tiering and deletion based on image category.
+
+| Prefix / Tag | Category | 0-7 days | 7-30 days | 30-90 days | 90 days - 1 year | 1 year+ |
+|---|---|---|---|---|---|---|
+| `images/captures/` | Non-match captures | S3 Standard | **Delete** | - | - | - |
+| `images/detections/` tag: `reviewed=dismissed` | Dismissed detections | S3 Standard | S3 Standard | **Delete** | - | - |
+| `images/detections/` tag: `reviewed=pending` | Unreviewed detections | S3 Standard | S3 Standard | S3-IA | **Delete** | - |
+| `images/detections/` tag: `reviewed=confirmed` | Confirmed detections | S3 Standard | S3 Standard | S3-IA | S3-IA | **Glacier Deep Archive** |
+| `mission-plans/` | Mission plans | S3 Standard | S3 Standard | S3-IA | S3-IA | Glacier Deep Archive |
+| `environments/` | Environment models | S3 Standard (no expiry, reused across missions) | | | | |
+
+**Estimated cost impact (3 drones, 5 missions/day):**
+- Without lifecycle: ~270 GB/month accumulating, ~$6/month and growing
+- With lifecycle: ~63 GB steady state (1 week of captures + long-term detections), ~$1.50/month steady
+
+The lifecycle rules will be implemented as CDK constructs in the storage stack.
 
 ---
 

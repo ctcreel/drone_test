@@ -10,7 +10,7 @@ from src.logging.formatters import HumanFormatter, JSONFormatter
 
 def _make_record(message="test message", level=logging.INFO):
     """Create a test log record."""
-    record = logging.LogRecord(
+    return logging.LogRecord(
         name="test.logger",
         level=level,
         pathname="test.py",
@@ -19,7 +19,6 @@ def _make_record(message="test message", level=logging.INFO):
         args=(),
         exc_info=None,
     )
-    return record
 
 
 class TestJSONFormatter:
@@ -100,15 +99,15 @@ class TestJSONFormatter:
 
     def test_includes_exception_info(self):
         formatter = JSONFormatter()
+        record = _make_record()
         try:
-            raise ValueError("test error")
+            raise ValueError("test error")  # noqa: TRY301
         except ValueError:
-            record = _make_record()
             record.exc_info = sys.exc_info()
-            output = formatter.format(record)
-            parsed = json.loads(output)
-            assert parsed["exception"]["type"] == "ValueError"
-            assert parsed["exception"]["message"] == "test error"
+        output = formatter.format(record)
+        parsed = json.loads(output)
+        assert parsed["exception"]["type"] == "ValueError"
+        assert parsed["exception"]["message"] == "test error"
 
 
 class TestHumanFormatter:

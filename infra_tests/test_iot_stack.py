@@ -1,9 +1,8 @@
 """Tests for the IoT CDK stack."""
 
 import aws_cdk as cdk
-import aws_cdk.assertions as assertions
+from aws_cdk import assertions
 from aws_cdk import aws_logs as logs
-
 from infra.stacks.iot_stack import IoTStack
 from infra.stacks.processing_stack import ProcessingStack
 from infra.stacks.storage_stack import StorageStack

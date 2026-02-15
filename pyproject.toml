@@ -159,6 +159,7 @@ ignore = [
     "ANN",     # Type annotations optional in tests
     "D",       # Docstrings optional in tests
     "TCH",     # Type-checking imports OK at runtime in tests
+    "SLF001",  # Private member access OK in tests
 ]
 "infra_tests/**/*.py" = [
     "S101",    # Assert allowed in tests

@@ -1,0 +1,127 @@
+# Simulation environment for drone fleet search system.
+#
+# Launches 3 ArduPilot SITL instances, a Gazebo simulation server,
+# and a Mosquitto MQTT broker for local development and integration testing.
+#
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose logs -f        # Follow all logs
+#   docker compose down           # Stop and remove containers
+
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MQTT Broker (Mosquitto) - simulates AWS IoT Core locally
+  # ═══════════════════════════════════════════════════════════════════════════
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: drone-fleet-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    networks:
+      - drone-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -h localhost -t '$$SYS/broker/uptime' -C 1 -W 3"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Gazebo Simulation Server
+  # ═══════════════════════════════════════════════════════════════════════════
+  gazebo:
+    image: gazebo:libgazebo11
+    container_name: drone-fleet-gazebo
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - GAZEBO_MASTER_URI=http://0.0.0.0:11345
+    ports:
+      - "11345:11345"
+    volumes:
+      - ./worlds:/worlds:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    networks:
+      - drone-network
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ArduPilot SITL Instances (3 drones with port offsets)
+  # ═══════════════════════════════════════════════════════════════════════════
+  sitl-drone-1:
+    image: radarku/ardupilot-sitl:latest
+    container_name: drone-fleet-sitl-1
+    environment:
+      - VEHICLE=ArduCopter
+      - SYSID_THISMAV=1
+      - INSTANCE=0
+    command: >
+      /ardupilot/Tools/autotest/sim_vehicle.py
+      -v ArduCopter
+      --no-rebuild
+      --no-mavproxy
+      -I 0
+      --custom-location=35.3632,-97.4867,370,0
+      -A "--serial0=tcp:0.0.0.0:5760"
+    ports:
+      - "5760:5760"
+    networks:
+      - drone-network
+    depends_on:
+      gazebo:
+        condition: service_started
+    restart: unless-stopped
+
+  sitl-drone-2:
+    image: radarku/ardupilot-sitl:latest
+    container_name: drone-fleet-sitl-2
+    environment:
+      - VEHICLE=ArduCopter
+      - SYSID_THISMAV=2
+      - INSTANCE=1
+    command: >
+      /ardupilot/Tools/autotest/sim_vehicle.py
+      -v ArduCopter
+      --no-rebuild
+      --no-mavproxy
+      -I 1
+      --custom-location=35.3642,-97.4867,370,0
+      -A "--serial0=tcp:0.0.0.0:5770"
+    ports:
+      - "5770:5770"
+    networks:
+      - drone-network
+    depends_on:
+      gazebo:
+        condition: service_started
+    restart: unless-stopped
+
+  sitl-drone-3:
+    image: radarku/ardupilot-sitl:latest
+    container_name: drone-fleet-sitl-3
+    environment:
+      - VEHICLE=ArduCopter
+      - SYSID_THISMAV=3
+      - INSTANCE=2
+    command: >
+      /ardupilot/Tools/autotest/sim_vehicle.py
+      -v ArduCopter
+      --no-rebuild
+      --no-mavproxy
+      -I 2
+      --custom-location=35.3652,-97.4867,370,0
+      -A "--serial0=tcp:0.0.0.0:5780"
+    ports:
+      - "5780:5780"
+    networks:
+      - drone-network
+    depends_on:
+      gazebo:
+        condition: service_started
+    restart: unless-stopped
+
+networks:
+  drone-network:
+    driver: bridge
+    name: drone-fleet-network

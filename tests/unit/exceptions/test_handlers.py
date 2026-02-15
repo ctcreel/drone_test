@@ -2,7 +2,6 @@
 
 import json
 
-from src.exceptions.base import DroneFleetError
 from src.exceptions.client_errors import NotFoundError, ValidationError
 from src.exceptions.handlers import (
     create_error_response,

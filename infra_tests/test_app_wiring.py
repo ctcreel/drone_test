@@ -9,18 +9,19 @@ class TestCdkSynth:
 
     def test_cdk_synth_succeeds(self) -> None:
         """All stacks synthesize without errors."""
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603
             [sys.executable, "app.py"],
             cwd="/Volumes/SSD/Code/Github/ctcreel/drone_test/infra",
             capture_output=True,
             text=True,
             timeout=60,
+            check=False,
         )
         assert result.returncode == 0, f"CDK synth failed:\n{result.stderr}"
 
     def test_all_five_stacks_in_output(self) -> None:
         """All five stacks are present in the synthesized output."""
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603
             [sys.executable, "-c", """
 import sys
 sys.path.insert(0, '.')
@@ -36,6 +37,7 @@ print("All stack imports successful")
             capture_output=True,
             text=True,
             timeout=30,
+            check=False,
         )
         assert result.returncode == 0, f"Stack imports failed:\n{result.stderr}"
         assert "All stack imports successful" in result.stdout

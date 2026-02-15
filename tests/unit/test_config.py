@@ -101,15 +101,15 @@ class TestSettingsValidation:
         assert settings.log_level == "WARNING"
 
     def test_api_timeout_minimum(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             Settings(api_timeout_seconds=0)
 
     def test_api_timeout_maximum(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             Settings(api_timeout_seconds=301)
 
     def test_max_fleet_size_minimum(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             Settings(max_fleet_size=0)
 
 

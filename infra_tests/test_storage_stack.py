@@ -1,9 +1,7 @@
 """Tests for the Storage CDK stack."""
 
 import aws_cdk as cdk
-import aws_cdk.assertions as assertions
-from aws_cdk import aws_logs as logs
-
+from aws_cdk import assertions
 from infra.stacks.storage_stack import StorageStack
 
 

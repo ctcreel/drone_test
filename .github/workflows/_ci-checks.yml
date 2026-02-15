@@ -27,8 +27,10 @@ jobs:
       - uses: ./.github/actions/setup-python-uv
       - name: Run cloud tests
         run: uv run pytest --cov=src --cov-fail-under=95 --cov-report=term-missing --cov-report=xml tests/
+      - name: Run edge tests
+        run: uv run pytest --cov=edge --cov-fail-under=95 --cov-report=term-missing edge_tests/
       - name: Run infra tests
-        run: uv run pytest infra_tests/
+        run: uv run pytest infra_tests/ --no-cov -q
 
   security:
     name: Security Scan

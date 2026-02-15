@@ -3,7 +3,7 @@
 import io
 import logging
 
-from src.logging.config import LogFormat, LogLevel, LoggingConfig
+from src.logging.config import LogFormat, LoggingConfig, LogLevel
 from src.logging.logger import get_logger, reset_logging, setup_logging
 
 

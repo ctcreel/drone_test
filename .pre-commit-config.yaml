@@ -1,0 +1,128 @@
+# Pre-commit configuration
+# Install: pre-commit install && pre-commit install --hook-type commit-msg && pre-commit install --hook-type pre-push
+
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+
+repos:
+  # Standard file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: check-yaml
+        name: Check YAML syntax
+        args: [--unsafe]
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-toml
+        name: Check TOML syntax
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: detect-private-key
+        name: Detect private keys
+        exclude: '^\.gitleaks\.toml$'
+      - id: no-commit-to-branch
+        name: Prevent commits to protected branches
+        args: ['--branch', 'main', '--branch', 'production']
+
+  # Secret detection
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.0
+    hooks:
+      - id: gitleaks
+        name: Detect secrets with gitleaks
+
+  # Commit message validation
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.13.0
+    hooks:
+      - id: commitizen
+        name: Validate commit message format
+        stages: [commit-msg]
+
+  # Ruff linter and formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.14
+    hooks:
+      - id: ruff
+        name: Ruff linter (with auto-fix)
+        args: [--fix]
+      - id: ruff-format
+        name: Ruff formatter
+
+  # Local hooks
+  - repo: local
+    hooks:
+      - id: pyright
+        name: Pyright type checker (strict mode)
+        entry: uv run pyright src/ infra/
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+
+      - id: vulture
+        name: Vulture dead code detector
+        entry: uv run vulture src/
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: bandit
+        name: Bandit security scanner
+        entry: uv run bandit -r src/ -ll -q
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: naming-conventions
+        name: Check naming conventions
+        entry: uv run python scripts/check_naming_conventions.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: import-check
+        name: Check import locations (must be at top)
+        entry: uv run python scripts/check_imports.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: abbreviation-check
+        name: Check forbidden abbreviations
+        entry: uv run python scripts/check_abbreviations.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: skip-comments-check
+        name: Check for forbidden skip comments
+        entry: uv run python scripts/check_skip_comments.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # Pre-push hooks
+  - repo: local
+    hooks:
+      - id: branch-name
+        name: Validate branch name format
+        entry: scripts/check_branch_name.sh
+        language: script
+        stages: [pre-push]
+        always_run: true
+
+      - id: pip-audit
+        name: Check dependency vulnerabilities
+        entry: uv run pip-audit
+        language: system
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true

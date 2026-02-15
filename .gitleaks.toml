@@ -1,0 +1,88 @@
+# Gitleaks Configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "Drone Fleet Search Gitleaks Configuration"
+
+[allowlist]
+description = "Global allowlist for non-sensitive patterns"
+
+paths = [
+    '''\.gitleaks\.toml$''',
+    '''\.pre-commit-config\.yaml$''',
+    '''go\.sum$''',
+    '''package-lock\.json$''',
+    '''uv\.lock$''',
+    '''\.github/.*\.ya?ml$''',
+]
+
+regexes = [
+    '''example''',
+    '''test''',
+    '''dummy''',
+    '''placeholder''',
+    '''changeme''',
+    '''your-.*-here''',
+    '''xxx+''',
+    '''fake''',
+    '''sample''',
+    '''mock''',
+]
+
+commits = []
+
+# AWS Rules
+[[rules]]
+id = "aws-access-key-id"
+description = "AWS Access Key ID"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["aws", "credentials", "key"]
+
+[[rules]]
+id = "aws-secret-access-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)aws_?secret_?access_?key\s*[=:]\s*['\"]?([A-Za-z0-9/+=]{40})['\"]?'''
+secretGroup = 1
+tags = ["aws", "credentials", "secret"]
+
+[[rules]]
+id = "aws-session-token"
+description = "AWS Session Token"
+regex = '''(?i)aws_?session_?token\s*[=:]\s*['\"]?([A-Za-z0-9/+=]{100,})['\"]?'''
+secretGroup = 1
+tags = ["aws", "credentials", "token"]
+
+# IoT Certificate Rules
+[[rules]]
+id = "iot-private-key"
+description = "IoT Device Private Key"
+regex = '''-----BEGIN\s*(?:RSA|EC|DSA|OPENSSH|PGP)?\s*PRIVATE KEY-----'''
+tags = ["iot", "key", "private"]
+
+# Generic Rules
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_-]?key|apikey)\s*[=:]\s*['\"]?([A-Za-z0-9_\-]{20,})['\"]?'''
+secretGroup = 2
+tags = ["api", "key"]
+
+[[rules]]
+id = "generic-secret"
+description = "Generic Secret"
+regex = '''(?i)(secret|password|passwd|pwd)\s*[=:]\s*['\"]?([^\s'\"]{8,})['\"]?'''
+secretGroup = 2
+tags = ["secret", "password"]
+
+# GitHub
+[[rules]]
+id = "github-token"
+description = "GitHub Personal Access Token"
+regex = '''ghp_[A-Za-z0-9_]{36}'''
+tags = ["github", "token"]
+
+# JWT
+[[rules]]
+id = "jwt"
+description = "JSON Web Token"
+regex = '''eyJ[A-Za-z0-9_-]*\.eyJ[A-Za-z0-9_-]*\.[A-Za-z0-9_-]*'''
+tags = ["jwt", "token"]

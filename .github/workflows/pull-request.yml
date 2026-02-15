@@ -1,0 +1,16 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, development, testing, production]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-checks:
+    uses: ./.github/workflows/_ci-checks.yml
+
+  naming-validation:
+    uses: ./.github/workflows/_naming-validation.yml

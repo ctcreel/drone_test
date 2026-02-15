@@ -1,0 +1,30 @@
+name: Setup Python + UV
+description: Install Python 3.12 with UV package manager and dependencies
+
+inputs:
+  python-version:
+    description: Python version to install
+    default: '3.12'
+  all-extras:
+    description: Install all extras
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Install UV
+      uses: astral-sh/setup-uv@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [ "${{ inputs.all-extras }}" = "true" ]; then
+          uv sync --all-extras
+        else
+          uv sync
+        fi

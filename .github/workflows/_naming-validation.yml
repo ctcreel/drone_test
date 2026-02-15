@@ -1,0 +1,20 @@
+name: Naming Validation
+
+on:
+  workflow_call:
+
+jobs:
+  naming:
+    name: Naming Conventions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+      - name: Check naming conventions
+        run: uv run python scripts/check_naming_conventions.py
+      - name: Check abbreviations
+        run: uv run python scripts/check_abbreviations.py
+      - name: Check imports
+        run: uv run python scripts/check_imports.py
+      - name: Check skip comments
+        run: uv run python scripts/check_skip_comments.py

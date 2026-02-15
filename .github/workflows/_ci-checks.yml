@@ -1,0 +1,42 @@
+name: CI Checks
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+      - name: Ruff check
+        run: uv run ruff check src/ infra/ edge/
+      - name: Ruff format check
+        run: uv run ruff format --check src/ infra/ edge/
+      - name: Pyright
+        run: uv run pyright src/ infra/
+      - name: Vulture
+        run: uv run vulture src/
+
+  test:
+    name: Test (95% coverage)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+      - name: Run cloud tests
+        run: uv run pytest --cov=src --cov-fail-under=95 --cov-report=term-missing --cov-report=xml tests/
+      - name: Run infra tests
+        run: uv run pytest infra_tests/
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+      - name: Bandit
+        run: uv run bandit -r src/ edge/
+      - name: Pip audit
+        run: uv run pip-audit

@@ -23,7 +23,10 @@ CONFIDENCE_THRESHOLD = 0.5
 
 
 def _get_clients() -> tuple[
-    DynamoDBClient, S3Client, MissionRepository, DetectionRepository,
+    DynamoDBClient,
+    S3Client,
+    MissionRepository,
+    DetectionRepository,
 ]:
     """Get AWS client instances."""
     table_name = os.environ["TABLE_NAME"]
@@ -110,17 +113,13 @@ def _process_image(
     result = analyzer.analyze_image(image_bytes, objective_description, metadata)
 
     # Filter by confidence threshold
-    relevant_detections = [
-        d for d in result.detections if d.confidence >= CONFIDENCE_THRESHOLD
-    ]
+    relevant_detections = [d for d in result.detections if d.confidence >= CONFIDENCE_THRESHOLD]
 
     # Store each detection
     created_ids: list[str] = []
     for detection_item in relevant_detections:
         detection_id = str(uuid.uuid4())
-        detection_key = (
-            f"images/detections/{mission_id}/{detection_id}.jpg"
-        )
+        detection_key = f"images/detections/{mission_id}/{detection_id}.jpg"
 
         # Copy image to detections folder
         s3_raw.copy_object(
@@ -178,7 +177,10 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     for record in records:
         message = _parse_sqs_record(record)
         result = _process_image(
-            message, mission_repo, detection_repo, analyzer,
+            message,
+            mission_repo,
+            detection_repo,
+            analyzer,
         )
         results.append(result)
 

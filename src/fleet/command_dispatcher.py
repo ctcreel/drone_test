@@ -64,11 +64,14 @@ class CommandDispatcher:
             segment_data: Flight segment data with waypoints.
         """
         topic = f"{MQTT_TOPIC_PREFIX}/{drone_id}/command/mission"
-        self._publish(topic, {
-            "command_type": "mission_segment",
-            "mission_id": mission_id,
-            "segment": segment_data,
-        })
+        self._publish(
+            topic,
+            {
+                "command_type": "mission_segment",
+                "mission_id": mission_id,
+                "segment": segment_data,
+            },
+        )
 
     def recall_drone(self, drone_id: str) -> None:
         """Send emergency recall command to a drone.
@@ -77,14 +80,20 @@ class CommandDispatcher:
             drone_id: Target drone identifier.
         """
         topic = f"{MQTT_TOPIC_PREFIX}/{drone_id}/command/recall"
-        self._publish(topic, {
-            "command_type": "recall",
-            "drone_id": drone_id,
-        })
+        self._publish(
+            topic,
+            {
+                "command_type": "recall",
+                "drone_id": drone_id,
+            },
+        )
 
     def broadcast_fleet_recall(self) -> None:
         """Broadcast emergency recall to all drones."""
         topic = f"{MQTT_TOPIC_PREFIX}/fleet/broadcast/recall"
-        self._publish(topic, {
-            "command_type": "fleet_recall",
-        })
+        self._publish(
+            topic,
+            {
+                "command_type": "fleet_recall",
+            },
+        )

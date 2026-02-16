@@ -1,0 +1,24 @@
+{
+  "scenario_name": "connectivity_loss",
+  "description": "3 drones with injected connectivity loss on drone-002 at T+120s for 30s",
+  "drone_count": 3,
+  "environment": "open_area",
+  "objective": "Search for a blue truck",
+  "timeout_seconds": 600,
+  "fault_injections": [
+    {
+      "type": "connectivity_loss",
+      "target_drone": "drone-002",
+      "trigger_offset_seconds": 120,
+      "duration_seconds": 30
+    }
+  ],
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "telemetry_buffered_during_outage", "target_drone": "drone-002", "required": true},
+    {"name": "telemetry_recovered_after_outage", "target_drone": "drone-002", "required": true},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 600}
+  ]
+}

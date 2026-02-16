@@ -1,0 +1,100 @@
+# Gazebo Camera Sensor Configuration
+#
+# Defines RGB and depth camera parameters for the Iris drone model
+# used in simulation. These values are referenced by Gazebo SDF model
+# plugins and the edge software's image capture module.
+#
+# The RGB camera captures color frames for AI-based visual analysis
+# (sent to Claude via AWS Bedrock). The depth camera provides range
+# data for obstacle avoidance on the Jetson edge computer.
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RGB Camera — Primary visual sensor for search/identification
+# ═══════════════════════════════════════════════════════════════════════════
+rgb_camera:
+  # Sensor identity
+  sensor_name: "iris_rgb_camera"
+  topic_name: "/drone/camera/rgb/image_raw"
+  frame_name: "rgb_camera_optical_frame"
+
+  # Image resolution and frame rate
+  image_width: 640
+  image_height: 480
+  update_rate: 30.0       # Frames per second
+
+  # Lens parameters
+  horizontal_field_of_view: 1.5708  # 90 degrees in radians
+  clip_near: 0.1          # Near clipping plane (meters)
+  clip_far: 300.0         # Far clipping plane (meters)
+
+  # Image format
+  pixel_format: "R8G8B8"
+
+  # Noise model (simulates real camera noise)
+  noise:
+    type: "gaussian"
+    mean: 0.0
+    standard_deviation: 0.007
+
+  # Camera position relative to drone body frame
+  # Mounted on the underside, angled 15 degrees downward
+  pose:
+    x: 0.1
+    y: 0.0
+    z: -0.05
+    roll: 0.0
+    pitch: -0.2618        # -15 degrees in radians (downward tilt)
+    yaw: 0.0
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Depth Camera — Range sensor for obstacle avoidance
+# ═══════════════════════════════════════════════════════════════════════════
+depth_camera:
+  # Sensor identity
+  sensor_name: "iris_depth_camera"
+  topic_name: "/drone/camera/depth/image_raw"
+  frame_name: "depth_camera_optical_frame"
+
+  # Image resolution and frame rate
+  # Lower resolution and frame rate than RGB to reduce compute load
+  # on the edge processor (depth is processed locally on Jetson)
+  image_width: 320
+  image_height: 240
+  update_rate: 15.0       # Frames per second
+
+  # Lens parameters
+  horizontal_field_of_view: 1.5708  # 90 degrees in radians
+  clip_near: 0.2          # Near clipping plane (meters)
+  clip_far: 50.0          # Far clipping plane — shorter range than RGB
+
+  # Depth-specific parameters
+  depth_format: "R_FLOAT32"
+  point_cloud_enabled: false  # Disabled to save bandwidth; enable if needed
+
+  # Noise model
+  noise:
+    type: "gaussian"
+    mean: 0.0
+    standard_deviation: 0.01
+
+  # Camera position relative to drone body frame
+  # Co-located with RGB camera for aligned depth/color data
+  pose:
+    x: 0.1
+    y: 0.0
+    z: -0.05
+    roll: 0.0
+    pitch: -0.2618        # -15 degrees in radians (downward tilt)
+    yaw: 0.0
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Drone Model Reference
+# ═══════════════════════════════════════════════════════════════════════════
+drone_model:
+  name: "iris_with_cameras"
+  base_model: "iris"      # Standard 3DR Iris quadcopter model
+  description: >
+    Iris quadcopter equipped with RGB and depth cameras for
+    drone fleet search operations. The RGB camera feeds images
+    to the cloud AI pipeline, while the depth camera provides
+    local obstacle avoidance data on the Jetson edge computer.

@@ -7,7 +7,8 @@ class TestTestEndpoints:
     """Tests for unauthenticated test endpoints."""
 
     def test_post_scenarios_no_auth_required(
-        self, api_url: str,
+        self,
+        api_url: str,
     ) -> None:
         """POST /api/v1/test/scenarios does not require auth."""
         response = requests.post(
@@ -18,7 +19,8 @@ class TestTestEndpoints:
         assert response.status_code == 200
 
     def test_scenario_results_no_auth_required(
-        self, api_url: str,
+        self,
+        api_url: str,
     ) -> None:
         """GET /api/v1/test/scenarios/{id}/results does not require auth."""
         response = requests.get(

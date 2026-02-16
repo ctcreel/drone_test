@@ -1,0 +1,82 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Target deployment environment
+        type: string
+        required: true
+      aws-region:
+        description: AWS region for deployment
+        type: string
+        default: us-east-1
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+    outputs:
+      api_endpoint:
+        description: API Gateway endpoint URL from CDK output
+        value: ${{ jobs.deploy.outputs.api_endpoint }}
+
+jobs:
+  deploy:
+    name: CDK Deploy (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.environment }}
+    outputs:
+      api_endpoint: ${{ steps.cdk-deploy.outputs.api_endpoint }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Build Lambda dependency layer
+        run: |
+          mkdir -p layers/dependencies/python
+          pip install -r requirements-lambda.txt -t layers/dependencies/python/
+
+      - name: CDK synth
+        run: cd infra && uv run cdk synth
+        env:
+          CDK_ENVIRONMENT: ${{ inputs.environment }}
+          AWS_REGION: ${{ inputs.aws-region }}
+
+      - name: CDK diff
+        run: cd infra && uv run cdk diff
+        env:
+          CDK_ENVIRONMENT: ${{ inputs.environment }}
+          AWS_REGION: ${{ inputs.aws-region }}
+
+      - name: CDK deploy
+        id: cdk-deploy
+        run: |
+          cd infra
+          output=$(uv run cdk deploy --all --require-approval never --outputs-file cdk-outputs.json 2>&1)
+          echo "$output"
+          if [ -f cdk-outputs.json ]; then
+            api_endpoint=$(python -c "
+          import json, sys
+          with open('cdk-outputs.json') as f:
+              data = json.load(f)
+          for stack in data.values():
+              for key, value in stack.items():
+                  if 'endpoint' in key.lower() or 'api' in key.lower():
+                      print(value)
+                      sys.exit(0)
+          print('')
+          ")
+            echo "api_endpoint=$api_endpoint" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          CDK_ENVIRONMENT: ${{ inputs.environment }}
+          AWS_REGION: ${{ inputs.aws-region }}

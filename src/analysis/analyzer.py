@@ -52,26 +52,28 @@ class BedrockVisionAnalyzer:
                 modelId=self._model_id,
                 contentType="application/json",
                 accept="application/json",
-                body=json.dumps({
-                    "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": 4096,
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": [
-                                {
-                                    "type": "image",
-                                    "source": {
-                                        "type": "base64",
-                                        "media_type": "image/jpeg",
-                                        "data": image_base64,
+                body=json.dumps(
+                    {
+                        "anthropic_version": "bedrock-2023-05-31",
+                        "max_tokens": 4096,
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": [
+                                    {
+                                        "type": "image",
+                                        "source": {
+                                            "type": "base64",
+                                            "media_type": "image/jpeg",
+                                            "data": image_base64,
+                                        },
                                     },
-                                },
-                                {"type": "text", "text": prompt},
-                            ],
-                        },
-                    ],
-                }),
+                                    {"type": "text", "text": prompt},
+                                ],
+                            },
+                        ],
+                    }
+                ),
             )
         except Exception as error:
             raise ExternalServiceError(
@@ -101,12 +103,12 @@ class BedrockVisionAnalyzer:
 {objective}
 
 ## Image Metadata
-- Drone: {metadata.get('drone_id', 'unknown')}
-- Position: {metadata.get('latitude', 0)}, \
-{metadata.get('longitude', 0)}, \
-{metadata.get('altitude', 0)}m
-- Heading: {metadata.get('heading', 0)} degrees
-- Capture Time: {metadata.get('capture_time', 'unknown')}
+- Drone: {metadata.get("drone_id", "unknown")}
+- Position: {metadata.get("latitude", 0)}, \
+{metadata.get("longitude", 0)}, \
+{metadata.get("altitude", 0)}m
+- Heading: {metadata.get("heading", 0)} degrees
+- Capture Time: {metadata.get("capture_time", "unknown")}
 
 ## Instructions
 Identify any objects matching the search objective. \

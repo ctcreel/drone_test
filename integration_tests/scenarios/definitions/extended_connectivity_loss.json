@@ -1,0 +1,24 @@
+{
+  "scenario_name": "extended_connectivity_loss",
+  "description": "2 drones where drone-001 loses connectivity for 5 minutes triggering state transitions",
+  "drone_count": 2,
+  "environment": "open_area",
+  "objective": "Search for a white SUV",
+  "timeout_seconds": 900,
+  "fault_injections": [
+    {
+      "type": "connectivity_loss",
+      "target_drone": "drone-001",
+      "trigger_offset_seconds": 60,
+      "duration_seconds": 300
+    }
+  ],
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "drone_state_transition", "target_drone": "drone-001", "expected_sequence": ["EXECUTING", "DEGRADED", "HOLDING", "RETURNING"]},
+    {"name": "remaining_drones_continue", "required": true},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 900}
+  ]
+}

@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<!--
+  Urban Block 01 — Gazebo SDF World
+
+  A simulated urban block with four buildings of varying heights arranged
+  around street corridors. Designed for drone fleet search simulation
+  where vehicles must navigate between structures.
+
+  Layout (top-down view, approximate):
+
+      +----------+          +----------+
+      | Building |  Street  | Building |
+      |   01     |  (E-W)   |   02     |
+      | (20m)    |          | (15m)    |
+      +----------+          +----------+
+           Street (N-S)          Street (N-S)
+      +----------+          +----------+
+      | Building |  Street  | Building |
+      |   03     |  (E-W)   |   04     |
+      | (30m)    |          | (10m)    |
+      +----------+          +----------+
+
+  Buildings are centered around the origin with 20m-wide street gaps.
+-->
+<sdf version="1.6">
+  <world name="urban_block_01">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Physics Engine Configuration                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>50</iters>
+          <sor>1.3</sor>
+        </solver>
+        <constraints>
+          <cfm>0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+    </physics>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Scene and Lighting                                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <scene>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.7 0.8 0.95 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <!-- Sun light source — positioned high and angled for realistic shadows -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 100 0 0 0</pose>
+      <diffuse>0.9 0.9 0.85 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <direction>-0.5 0.3 -0.9</direction>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Ground Plane                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="ground_plane_link">
+        <collision name="ground_plane_collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="ground_plane_visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.4 0.4 0.4 1</ambient>
+            <diffuse>0.55 0.55 0.55 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Building 01 — Northwest (20m tall)                                -->
+    <!--                                                                   -->
+    <!-- Position: (-20, 20, 10) — offset from center, half-height for    -->
+    <!-- box origin. 15m wide x 20m deep x 20m tall.                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <model name="building_01">
+      <static>true</static>
+      <pose>-20 20 10 0 0 0</pose>
+      <link name="building_01_link">
+        <collision name="building_01_collision">
+          <geometry>
+            <box>
+              <size>15 20 20</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="building_01_visual">
+          <geometry>
+            <box>
+              <size>15 20 20</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.55 0.5 1</ambient>
+            <diffuse>0.7 0.65 0.6 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Building 02 — Northeast (15m tall)                                -->
+    <!--                                                                   -->
+    <!-- Position: (20, 20, 7.5) — 20m wide x 15m deep x 15m tall.       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <model name="building_02">
+      <static>true</static>
+      <pose>20 20 7.5 0 0 0</pose>
+      <link name="building_02_link">
+        <collision name="building_02_collision">
+          <geometry>
+            <box>
+              <size>20 15 15</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="building_02_visual">
+          <geometry>
+            <box>
+              <size>20 15 15</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.6 1</ambient>
+            <diffuse>0.6 0.6 0.7 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Building 03 — Southwest (30m tall, tallest)                       -->
+    <!--                                                                   -->
+    <!-- Position: (-20, -20, 15) — 18m wide x 18m deep x 30m tall.      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <model name="building_03">
+      <static>true</static>
+      <pose>-20 -20 15 0 0 0</pose>
+      <link name="building_03_link">
+        <collision name="building_03_collision">
+          <geometry>
+            <box>
+              <size>18 18 30</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="building_03_visual">
+          <geometry>
+            <box>
+              <size>18 18 30</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.55 0.5 0.45 1</ambient>
+            <diffuse>0.65 0.6 0.55 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Building 04 — Southeast (10m tall, shortest)                      -->
+    <!--                                                                   -->
+    <!-- Position: (20, -20, 5) — 12m wide x 22m deep x 10m tall.        -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <model name="building_04">
+      <static>true</static>
+      <pose>20 -20 5 0 0 0</pose>
+      <link name="building_04_link">
+        <collision name="building_04_collision">
+          <geometry>
+            <box>
+              <size>12 22 10</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="building_04_visual">
+          <geometry>
+            <box>
+              <size>12 22 10</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.6 0.58 0.55 1</ambient>
+            <diffuse>0.72 0.7 0.65 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

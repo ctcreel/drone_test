@@ -82,9 +82,7 @@ class MissionExecutor:
             )
 
         if not segment.waypoints:
-            raise ValueError(
-                f"Mission segment {segment.segment_id} contains no waypoints"
-            )
+            raise ValueError(f"Mission segment {segment.segment_id} contains no waypoints")
 
         logger.info(
             "Loading mission segment %s (%d waypoints) for mission %s",

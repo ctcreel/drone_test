@@ -238,9 +238,7 @@ class ObstacleAvoidance:
             bearing_degrees=detection.bearing_degrees,
         )
         priority = (
-            _PRIORITY_MEDIUM
-            if detection.severity == ObstacleSeverity.MEDIUM
-            else _PRIORITY_LOW
+            _PRIORITY_MEDIUM if detection.severity == ObstacleSeverity.MEDIUM else _PRIORITY_LOW
         )
 
         return AvoidanceManeuver(

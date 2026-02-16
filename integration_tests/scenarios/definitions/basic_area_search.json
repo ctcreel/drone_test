@@ -1,0 +1,16 @@
+{
+  "scenario_name": "basic_area_search",
+  "description": "Full mission lifecycle with 3 drones in open area",
+  "drone_count": 3,
+  "environment": "open_area",
+  "objective": "Search for a red vehicle",
+  "timeout_seconds": 900,
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "area_coverage_percent", "minimum": 85},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "target_detected", "minimum_confidence": 0.7},
+    {"name": "mission_duration_seconds", "maximum": 900}
+  ]
+}

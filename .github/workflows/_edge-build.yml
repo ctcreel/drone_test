@@ -1,0 +1,34 @@
+name: Edge Build
+
+on:
+  workflow_call:
+
+jobs:
+  edge-tests:
+    name: Edge Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+
+      - name: Run edge unit tests with coverage
+        run: |
+          uv run pytest \
+            --cov=edge \
+            --cov-fail-under=95 \
+            --cov-report=term-missing \
+            --cov-report=xml:edge-coverage.xml \
+            --junitxml=edge-test-results.xml \
+            edge_tests/ \
+            -v
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: edge-test-results
+          path: |
+            edge-test-results.xml
+            edge-coverage.xml
+          retention-days: 14

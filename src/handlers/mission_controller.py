@@ -97,11 +97,13 @@ def _route_request(event: dict[str, Any]) -> dict[str, Any]:
 
     if "/test/scenarios" in resource:
         return create_success_response(
-            200, {"status": "ok", "message": "test endpoint"},
+            200,
+            {"status": "ok", "message": "test endpoint"},
         )
 
     return create_success_response(
-        200, {"status": "ok", "message": "mission controller"},
+        200,
+        {"status": "ok", "message": "mission controller"},
     )
 
 

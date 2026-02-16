@@ -7,7 +7,8 @@ class TestDroneEndpoints:
     """Tests for drone CRUD endpoints."""
 
     def test_unauthenticated_request_returns_401(
-        self, api_url: str,
+        self,
+        api_url: str,
     ) -> None:
         """Requests without auth token are rejected."""
         response = requests.get(
@@ -17,7 +18,9 @@ class TestDroneEndpoints:
         assert response.status_code == 401
 
     def test_list_drones(
-        self, api_url: str, auth_headers: dict[str, str],
+        self,
+        api_url: str,
+        auth_headers: dict[str, str],
     ) -> None:
         """GET /api/v1/drones returns drone list."""
         response = requests.get(
@@ -31,7 +34,9 @@ class TestDroneEndpoints:
         assert isinstance(body["drones"], list)
 
     def test_get_nonexistent_drone_returns_404(
-        self, api_url: str, auth_headers: dict[str, str],
+        self,
+        api_url: str,
+        auth_headers: dict[str, str],
     ) -> None:
         """GET /api/v1/drones/{id} returns 404 for missing drone."""
         response = requests.get(

@@ -1,0 +1,18 @@
+{
+  "scenario_name": "dynamic_replanning",
+  "description": "3 drones where a detection triggers dynamic reallocation of search resources",
+  "drone_count": 3,
+  "environment": "open_area",
+  "objective": "Search for a silver sedan with dynamic reallocation on detection",
+  "planted_targets": 1,
+  "timeout_seconds": 900,
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "target_detected", "minimum_confidence": 0.6},
+    {"name": "reallocation_triggered", "required": true},
+    {"name": "drone_redirected_to_detection_area", "required": true},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 900}
+  ]
+}

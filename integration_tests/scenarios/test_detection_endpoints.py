@@ -7,7 +7,8 @@ class TestDetectionEndpoints:
     """Tests for detection endpoints under missions."""
 
     def test_unauthenticated_detection_returns_401(
-        self, api_url: str,
+        self,
+        api_url: str,
     ) -> None:
         """Requests without auth token are rejected."""
         response = requests.get(
@@ -17,7 +18,9 @@ class TestDetectionEndpoints:
         assert response.status_code == 401
 
     def test_list_detections_responds(
-        self, api_url: str, auth_headers: dict[str, str],
+        self,
+        api_url: str,
+        auth_headers: dict[str, str],
     ) -> None:
         """GET /api/v1/missions/{id}/detections returns a response."""
         response = requests.get(
@@ -29,7 +32,9 @@ class TestDetectionEndpoints:
         assert response.status_code == 200
 
     def test_review_detection_responds(
-        self, api_url: str, auth_headers: dict[str, str],
+        self,
+        api_url: str,
+        auth_headers: dict[str, str],
     ) -> None:
         """POST /api/v1/missions/{id}/detections/{id}/review returns a response."""
         response = requests.post(

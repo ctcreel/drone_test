@@ -1,0 +1,16 @@
+{
+  "scenario_name": "obstacle_avoidance",
+  "description": "2 drones navigate urban block environment verifying collision-free flight",
+  "drone_count": 2,
+  "environment": "urban_block",
+  "objective": "Search for a missing person between buildings",
+  "timeout_seconds": 600,
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "no_collisions", "required": true},
+    {"name": "minimum_obstacle_clearance_meters", "minimum": 10},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 600}
+  ]
+}

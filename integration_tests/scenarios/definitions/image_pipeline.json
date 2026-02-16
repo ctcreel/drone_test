@@ -1,0 +1,19 @@
+{
+  "scenario_name": "image_pipeline",
+  "description": "2 drones testing full image capture, upload, analysis, and detection pipeline with 3 planted targets",
+  "drone_count": 2,
+  "environment": "open_area",
+  "objective": "Detect 3 planted orange markers",
+  "planted_targets": 3,
+  "timeout_seconds": 600,
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 30},
+    {"name": "all_drones_takeoff", "threshold_seconds": 60},
+    {"name": "images_captured", "minimum": 10},
+    {"name": "images_uploaded_to_s3", "minimum": 10},
+    {"name": "images_analyzed", "minimum": 10},
+    {"name": "targets_detected", "minimum": 3, "minimum_confidence": 0.7},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 600}
+  ]
+}

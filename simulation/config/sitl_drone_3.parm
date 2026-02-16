@@ -1,0 +1,50 @@
+# ArduPilot SITL Parameter File — Drone 3
+#
+# Configuration for the third drone in the simulation fleet.
+# This file is loaded by ArduPilot SITL at startup via the --defaults flag.
+#
+# Starting position: 35.3652, -97.4867 (staggered ~220m north of drone 1)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# System Identification
+# ═══════════════════════════════════════════════════════════════════════════
+SYSID_THISMAV       3
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Serial / MAVLink Configuration
+# ═══════════════════════════════════════════════════════════════════════════
+SERIAL0_PROTOCOL    2       # MAVLink2 on serial port 0
+SERIAL0_BAUD        921600  # High baud rate for simulation
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Simulation Parameters
+# ═══════════════════════════════════════════════════════════════════════════
+SIM_SPEEDUP         1       # Real-time simulation (1x speed)
+ARMING_CHECK        0       # Disable arming checks for simulation
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Simulated Origin (starting GPS position for this drone)
+# ═══════════════════════════════════════════════════════════════════════════
+SIM_OPOS_LAT        35.3652
+SIM_OPOS_LNG        -97.4867
+SIM_OPOS_ALT        370     # Altitude in meters above sea level
+SIM_OPOS_HDG        0       # Initial heading (north)
+
+# ═══════════════════════════════════════════════════════════════════════════
+# GPS Configuration for Simulation
+# ═══════════════════════════════════════════════════════════════════════════
+GPS_TYPE            1       # Auto-detect GPS type
+GPS_HDOP_GOOD       1.4     # Acceptable horizontal dilution of precision
+SIM_GPS_NUMSATS     10      # Number of simulated GPS satellites
+SIM_GPS_DISABLE     0       # GPS enabled
+SIM_GPS_DELAY       100     # Simulated GPS delay in milliseconds
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Flight Behavior
+# ═══════════════════════════════════════════════════════════════════════════
+PILOT_SPEED_UP      250     # Maximum climb rate (cm/s)
+PILOT_SPEED_DN      150     # Maximum descent rate (cm/s)
+WPNAV_SPEED         500     # Waypoint navigation speed (cm/s)
+WPNAV_SPEED_UP      250     # Waypoint climb speed (cm/s)
+WPNAV_SPEED_DN      150     # Waypoint descent speed (cm/s)
+RTL_ALT             3000    # Return-to-launch altitude (cm)

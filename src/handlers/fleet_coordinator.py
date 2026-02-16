@@ -34,25 +34,26 @@ def _check_drone_health(drone: Drone) -> list[dict[str, str]]:
     alerts: list[dict[str, str]] = []
 
     if drone.health and drone.health.battery_remaining_percent < LOW_BATTERY_THRESHOLD:
-        alerts.append({
-            "drone_id": drone.drone_id,
-            "type": "low_battery",
-            "message": (
-                f"Battery at "
-                f"{drone.health.battery_remaining_percent:.0f}%"
-            ),
-        })
+        alerts.append(
+            {
+                "drone_id": drone.drone_id,
+                "type": "low_battery",
+                "message": (f"Battery at {drone.health.battery_remaining_percent:.0f}%"),
+            }
+        )
 
     if drone.last_seen:
         try:
             last_seen_time = datetime.fromisoformat(drone.last_seen)
             threshold = timedelta(seconds=CONNECTIVITY_DEGRADED_THRESHOLD)
             if datetime.now(UTC) - last_seen_time > threshold:
-                alerts.append({
-                    "drone_id": drone.drone_id,
-                    "type": "connection_lost",
-                    "message": f"Last seen: {drone.last_seen}",
-                })
+                alerts.append(
+                    {
+                        "drone_id": drone.drone_id,
+                        "type": "connection_lost",
+                        "message": f"Last seen: {drone.last_seen}",
+                    }
+                )
         except ValueError:
             pass
 
@@ -70,15 +71,9 @@ def _build_fleet_state(drones: list[Drone]) -> FleetState:
     """
     return FleetState(
         total_drones=len(drones),
-        available_drones=sum(
-            1 for d in drones if d.status == DroneStatus.AVAILABLE
-        ),
-        active_drones=sum(
-            1 for d in drones if d.status == DroneStatus.ACTIVE
-        ),
-        maintenance_drones=sum(
-            1 for d in drones if d.status == DroneStatus.MAINTENANCE
-        ),
+        available_drones=sum(1 for d in drones if d.status == DroneStatus.AVAILABLE),
+        active_drones=sum(1 for d in drones if d.status == DroneStatus.ACTIVE),
+        maintenance_drones=sum(1 for d in drones if d.status == DroneStatus.MAINTENANCE),
     )
 
 

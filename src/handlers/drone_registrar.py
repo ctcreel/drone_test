@@ -51,7 +51,8 @@ def _route_request(event: dict[str, Any]) -> dict[str, Any]:
         return _get_drone(repository, drone_id)
 
     return create_success_response(
-        200, {"status": "ok", "message": "drone registrar"},
+        200,
+        {"status": "ok", "message": "drone registrar"},
     )
 
 

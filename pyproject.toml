@@ -225,6 +225,7 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.coverage.run]
 branch = true
 source = ["src"]
+omit = ["edge/main.py"]
 
 # Commitizen - Conventional Commits
 [tool.commitizen]

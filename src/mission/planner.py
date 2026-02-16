@@ -33,17 +33,9 @@ def _build_planning_prompt(
         f"{drone.get('longitude', 0)})"
         for drone in available_drones
     ]
-    drones_text = (
-        "\n".join(drone_descriptions)
-        if drone_descriptions
-        else "  No drones available"
-    )
+    drones_text = "\n".join(drone_descriptions) if drone_descriptions else "  No drones available"
 
-    coords = [
-        coord.model_dump()
-        for ring in objective.search_area.coordinates
-        for coord in ring
-    ]
+    coords = [coord.model_dump() for ring in objective.search_area.coordinates for coord in ring]
     search_area_json = json.dumps(coords, indent=2)
 
     return f"""You are a drone fleet mission planner. \
@@ -135,13 +127,15 @@ def plan_mission(
             modelId=model_id,
             contentType="application/json",
             accept="application/json",
-            body=json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 4096,
-                "messages": [
-                    {"role": "user", "content": prompt},
-                ],
-            }),
+            body=json.dumps(
+                {
+                    "anthropic_version": "bedrock-2023-05-31",
+                    "max_tokens": 4096,
+                    "messages": [
+                        {"role": "user", "content": prompt},
+                    ],
+                }
+            ),
         )
     except Exception as error:
         raise ExternalServiceError(

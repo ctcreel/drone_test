@@ -78,17 +78,21 @@ def _process_telemetry(
                 payload.get("remaining_percent", 0.0),
             ),
             estimated_flight_time_seconds=payload.get(
-                "estimated_flight_time_seconds", 0,
+                "estimated_flight_time_seconds",
+                0,
             ),
         )
         db_client.put_item(report.to_dynamodb_item())
 
         # Update drone health if battery is reported
-        drone_repo.update_health(drone_id, {
-            "battery_voltage": report.voltage,
-            "battery_remaining_percent": report.remaining_percent,
-            "estimated_flight_time_seconds": report.estimated_flight_time_seconds,
-        })
+        drone_repo.update_health(
+            drone_id,
+            {
+                "battery_voltage": report.voltage,
+                "battery_remaining_percent": report.remaining_percent,
+                "estimated_flight_time_seconds": report.estimated_flight_time_seconds,
+            },
+        )
         return {"processed": True, "type": "battery"}
 
     if message_type == "obstacle_event":

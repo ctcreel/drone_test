@@ -2,15 +2,37 @@ name: Pull Request Checks
 
 on:
   pull_request:
-    branches: [main, development, testing, production]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Lint, type-check, test, and security scan
+  # ═══════════════════════════════════════════════════════════════════════════
   ci-checks:
     uses: ./.github/workflows/_ci-checks.yml
 
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Naming conventions, abbreviations, imports, skip comments
+  # ═══════════════════════════════════════════════════════════════════════════
   naming-validation:
     uses: ./.github/workflows/_naming-validation.yml
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Verify CDK synthesizes without errors
+  # ═══════════════════════════════════════════════════════════════════════════
+  cdk-validation:
+    name: CDK Synth Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-python-uv
+      - name: CDK synth
+        run: cd infra && uv run cdk synth

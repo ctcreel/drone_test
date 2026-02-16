@@ -37,14 +37,24 @@ services:
     environment:
       - DISPLAY=${DISPLAY:-:0}
       - GAZEBO_MASTER_URI=http://0.0.0.0:11345
+    command: >
+      gzserver --verbose
+      ${GAZEBO_WORLD:-/worlds/urban_block_01.world}
     ports:
       - "11345:11345"
     volumes:
       - ./worlds:/worlds:ro
+      - ./config/gazebo_camera.yaml:/config/gazebo_camera.yaml:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     networks:
       - drone-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "gz stats -p 2>/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   # ═══════════════════════════════════════════════════════════════════════════
   # ArduPilot SITL Instances (3 drones with port offsets)
@@ -63,9 +73,12 @@ services:
       --no-mavproxy
       -I 0
       --custom-location=35.3632,-97.4867,370,0
+      --defaults=/config/sitl_drone_1.parm
       -A "--serial0=tcp:0.0.0.0:5760"
     ports:
       - "5760:5760"
+    volumes:
+      - ./config:/config:ro
     networks:
       - drone-network
     depends_on:
@@ -87,9 +100,12 @@ services:
       --no-mavproxy
       -I 1
       --custom-location=35.3642,-97.4867,370,0
+      --defaults=/config/sitl_drone_2.parm
       -A "--serial0=tcp:0.0.0.0:5770"
     ports:
       - "5770:5770"
+    volumes:
+      - ./config:/config:ro
     networks:
       - drone-network
     depends_on:
@@ -111,9 +127,12 @@ services:
       --no-mavproxy
       -I 2
       --custom-location=35.3652,-97.4867,370,0
+      --defaults=/config/sitl_drone_3.parm
       -A "--serial0=tcp:0.0.0.0:5780"
     ports:
       - "5780:5780"
+    volumes:
+      - ./config:/config:ro
     networks:
       - drone-network
     depends_on:

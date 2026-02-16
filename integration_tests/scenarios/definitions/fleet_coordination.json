@@ -1,0 +1,21 @@
+{
+  "scenario_name": "fleet_coordination",
+  "description": "5 drones coordinating search of a large 1km x 0.5km area",
+  "drone_count": 5,
+  "environment": "large_open_area",
+  "objective": "Search for a missing hiker in open terrain",
+  "search_area_dimensions": {
+    "width_meters": 1000,
+    "height_meters": 500
+  },
+  "timeout_seconds": 1200,
+  "assertions": [
+    {"name": "mission_plan_generated", "threshold_seconds": 45},
+    {"name": "all_drones_takeoff", "threshold_seconds": 90},
+    {"name": "minimum_drone_separation_meters", "minimum": 20},
+    {"name": "area_coverage_percent", "minimum": 90},
+    {"name": "no_collisions", "required": true},
+    {"name": "all_drones_returned_safely", "required": true},
+    {"name": "mission_duration_seconds", "maximum": 1200}
+  ]
+}

@@ -43,7 +43,7 @@ test: ## Run cloud tier tests with 95% coverage requirement
 	uv run pytest --cov=src --cov-fail-under=95 --cov-report=term-missing --cov-report=xml tests/
 
 test-edge: ## Run edge tier tests
-	uv run pytest -o "addopts=--cov=edge --cov-fail-under=95 --cov-report=term-missing" edge_tests/
+	uv run pytest --cov=edge --cov-fail-under=95 --cov-report=term-missing edge_tests/
 
 test-infra: ## Run CDK infrastructure tests
 	PYTHONPATH=infra uv run pytest infra_tests/ --no-cov -q

@@ -28,6 +28,7 @@ _MESSAGE_TIMEOUT_SECONDS: float = 5.0
 _COORDINATE_SCALE: float = 1e-7
 _HEADING_SCALE: float = 100.0
 _SPEED_SCALE: float = 100.0
+_DATA_STREAM_RATE_HZ: int = 4
 _VOLTAGE_SCALE: float = 1000.0
 
 # Command type dispatch keys
@@ -107,11 +108,32 @@ class MavlinkBridge:
             ) from error
 
         self._state = AutopilotState.CONNECTED
+        self._request_data_streams()
         logger.info(
             "Connected to autopilot (system=%d, component=%d)",
             self._connection.target_system,
             self._connection.target_component,
         )
+
+    def _request_data_streams(self) -> None:
+        """Request telemetry data streams from the autopilot.
+
+        Sends REQUEST_DATA_STREAM messages so the autopilot begins
+        sending GLOBAL_POSITION_INT, SYS_STATUS, and GPS_RAW_INT.
+        """
+        connection = self._get_connection()
+        for stream_id in (
+            mavutil.mavlink.MAV_DATA_STREAM_POSITION,
+            mavutil.mavlink.MAV_DATA_STREAM_EXTENDED_STATUS,
+        ):
+            connection.mav.request_data_stream_send(
+                connection.target_system,
+                connection.target_component,
+                stream_id,
+                _DATA_STREAM_RATE_HZ,
+                1,
+            )
+        logger.info("Requested data streams at %d Hz", _DATA_STREAM_RATE_HZ)
 
     def disconnect(self) -> None:
         """Disconnect from the autopilot and release resources."""
@@ -189,7 +211,7 @@ class MavlinkBridge:
             longitude=position.lon * _COORDINATE_SCALE,
             altitude=position.relative_alt / _SPEED_SCALE,
             heading=position.hdg / _HEADING_SCALE,
-            ground_speed=position.vx / _SPEED_SCALE,
+            ground_speed=max(0.0, position.vx / _SPEED_SCALE),
             vertical_speed=position.vz / _SPEED_SCALE,
             battery_voltage=system_status.voltage_battery / _VOLTAGE_SCALE,
             battery_remaining=system_status.battery_remaining,

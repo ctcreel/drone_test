@@ -64,17 +64,13 @@ services:
     container_name: drone-fleet-sitl-1
     environment:
       - VEHICLE=ArduCopter
-      - SYSID_THISMAV=1
       - INSTANCE=0
-    command: >
-      /ardupilot/Tools/autotest/sim_vehicle.py
-      -v ArduCopter
-      --no-rebuild
-      --no-mavproxy
-      -I 0
-      --custom-location=35.3632,-97.4867,370,0
-      --defaults=/config/sitl_drone_1.parm
-      -A "--serial0=tcp:0.0.0.0:5760"
+      - LAT=35.3632
+      - LON=-97.4867
+      - ALT=370
+      - DIR=0
+      - MODEL=+
+      - SPEEDUP=1
     ports:
       - "5760:5760"
     volumes:
@@ -91,17 +87,13 @@ services:
     container_name: drone-fleet-sitl-2
     environment:
       - VEHICLE=ArduCopter
-      - SYSID_THISMAV=2
       - INSTANCE=1
-    command: >
-      /ardupilot/Tools/autotest/sim_vehicle.py
-      -v ArduCopter
-      --no-rebuild
-      --no-mavproxy
-      -I 1
-      --custom-location=35.3642,-97.4867,370,0
-      --defaults=/config/sitl_drone_2.parm
-      -A "--serial0=tcp:0.0.0.0:5770"
+      - LAT=35.3642
+      - LON=-97.4867
+      - ALT=370
+      - DIR=0
+      - MODEL=+
+      - SPEEDUP=1
     ports:
       - "5770:5770"
     volumes:
@@ -118,17 +110,13 @@ services:
     container_name: drone-fleet-sitl-3
     environment:
       - VEHICLE=ArduCopter
-      - SYSID_THISMAV=3
       - INSTANCE=2
-    command: >
-      /ardupilot/Tools/autotest/sim_vehicle.py
-      -v ArduCopter
-      --no-rebuild
-      --no-mavproxy
-      -I 2
-      --custom-location=35.3652,-97.4867,370,0
-      --defaults=/config/sitl_drone_3.parm
-      -A "--serial0=tcp:0.0.0.0:5780"
+      - LAT=35.3652
+      - LON=-97.4867
+      - ALT=370
+      - DIR=0
+      - MODEL=+
+      - SPEEDUP=1
     ports:
       - "5780:5780"
     volumes:

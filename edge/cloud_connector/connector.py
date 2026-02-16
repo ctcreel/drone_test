@@ -187,7 +187,7 @@ class CloudConnector:
 
         Drains any buffered messages that accumulated during disconnection.
         """
-        if reason_code == mqtt.ReasonCode(mqtt.ReasonCodes.SUCCESS):
+        if not reason_code.is_failure:
             self._is_connected = True
             logger.info("Connected to MQTT broker (rc=%s)", reason_code)
             self._drain_buffer()

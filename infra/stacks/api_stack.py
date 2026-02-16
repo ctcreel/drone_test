@@ -370,6 +370,11 @@ class ApiStack(Stack):
         """Add drone-related API endpoints."""
         drones = api_v1.add_resource("drones")
         drones.add_method(
+            "POST",
+            self._integration(self.drone_registrar),
+            authorizer=authorizer,
+        )
+        drones.add_method(
             "GET",
             self._integration(self.drone_registrar),
             authorizer=authorizer,
